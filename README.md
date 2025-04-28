@@ -1,57 +1,112 @@
-Tasks
+# AlDDoS Classification Pipeline
 
-Below are the overall tasks to carry out the job. We literally follow the step given in the below link, however our approach is completely different.         
+[![CI Status](https://github.com/yourusername/AlDDoS-Classification/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/AlDDoS-Classification/actions)
+![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-https://github.com/Ahamasaleh/Deep-learning-for-intrusion-detection-using-Recurrent-Neural-network-RNN/blob/f91edfc24506bad8bad462f6637699bc3e6aa9e3/KDDTest+_Binary_Classification.ipynb
+A deep-learning pipeline for multiclass classification of Application-Layer DDoS (AlDDoS) attacks across five protocols (DNS, LDAP, SNMP, NTP, TFTP) using LSTM, BiLSTM, CNN, and MLP models on the CICDDoS2019 dataset.
 
+---
 
-1 - undersample, oversample and merge
+## 🚀 Features
 
-My advisor told me that I need to merge the datasets. 
-There are five separate attack datasets with their corresponding normal(benign) traffic (DNS, LDAP, SNMP, NTP, and TFTP)
-    
-Their total instances or number of rows are as follows:
-    
-   
-				DNS                TFTP             LDAP             SNMP                   NTP               Total
-								
-Total Instances/rows		 5,074,414	    20,107,828	    2,181,543	    5,161,378     	1,217,008   	 	33,742,171
-								
-DDoS Instances		        5,071,011	    20,082,580     	2,179,930	    5,159,870	      1,202,642	    	33,696,033
-								
-Benign Instances	        3,402	        25,247	        1,612	        1,507	           14,365	       	46,133
-   
-			 					
+- **Data Sampling & Merging**  
+  Randomly sample 20 000 attack and 4 000 benign records per protocol, then merge into a balanced multiclass CSV.
+- **Train/Test Split**  
+  Divide the merged dataset into training and testing sets.
+- **One-Hot Encoding**  
+  Convert all categorical features into binary vectors.
+- **Label Remapping**  
+  Map tags to multiclass labels (0 = Normal, 1 = DoS, 2 = Probe, 3 = R2L, 4 = U2R).
+- **Model Training**  
+  Train and compare LSTM, BiLSTM, CNN, and MLP classifiers.
+- **Hyperparameter Optimization & Evaluation**  
+  Tune model parameters and report accuracy & F1-scores.
 
-The thing is we need to forget about undersampling and oversampling because we do not need to balance each datasets.
+---
 
-We need only one csv file for multiclass classification, totalling 120,000 instances/rows from the total of 33,742,171. 
+## 📁 Project Structure
 
-Accordingly, we need 100,000 attacks (20,000 instances from each (DNS, LDAP, SNMP, NTP, and TFTP) and only 20,000 benign by taking 4000 benign traffic from each protocol)    
+```bash
+AlDDoS-Classification/
+├── data/
+│   ├── raw/                   # Original CSVs per protocol
+│   └── sampled/               # Sampled & merged datasets
+├── notebooks/
+│   ├── 1_sampling.ipynb       # Sampling & merging workflow
+│   ├── 2_preprocessing.ipynb  # Encoding & train/test split
+│   └── 3_model_training.ipynb # Model training & evaluation
+├── scripts/
+│   ├── sample_merge.py        # Sample & merge CSV files
+│   ├── preprocess.py          # One-hot encode & split data
+│   ├── train_model.py         # Train specified model
+│   └── evaluate.py            # Evaluate a trained model
+├── models/                    # Saved model checkpoints
+├── requirements.txt           # Python dependencies
+└── README.md                  # Project documentation
 
+```
+## 🛠 Installation
+### 1. Clone the repo
 
+``` bash
+git clone https://github.com/yourusername/AlDDoS-Classification.git
+cd AlDDoS-Classification
 
-Thus, the new dataset will have 
-                  
-                                 DNS	           TFTP	            LDAP	        SNMP	        NTP         		Total
-								
-DDoS after sampling 		 20,000	          20,000           20000	       20000	         20000		      100000
-								
-Benign after sampling		 4,000	         4000	            4000	       4000         	4000	         	20000
-    
+```
+### 2. Create & activate a virtual environment
 
-So, what we need to do is write a code that randomly picks 20,000 attack rows from 5 csv files and 4,000 Benign from 5 csv files.   
+``` bash
+python3 -m venv env
+source env/bin/activate
 
+```
+### 3. Install dependencies
 
-Finally, merge the 10 csv files.      
+``` bash
+pip install -r requirements.txt
 
+```
+## 🚀 Usage
+### 1. Sample & Merge
+```bash
+python scripts/sample_merge.py \
+  --input-dir data/raw \
+  --output data/sampled/merged.csv \
+  --attack-per-protocol 20000 \
+  --benign-per-protocol 4000
+```
+### 2. Preprocess (Encode & Split)
+```bash
+python scripts/preprocess.py \
+  --input data/sampled/merged.csv \
+  --train data/sampled/train.csv \
+  --test data/sampled/test.csv
+```
+### 3. Train a Model
 
-2 - split for testing and training
+```bash
+python scripts/train_model.py \
+  --model lstm \
+  --train data/sampled/train.csv \
+  --output models/lstm.pth
+Supported models: lstm, bilstm, cnn, mlp
 
-3 -  One-Hot-Encoding is used to convert all categorical properties to binary properties.
+```
+## 4. Evaluate a Model
+```bash
+python scripts/evaluate.py \
+  --model-path models/lstm.pth \
+  --test data/sampled/test.csv
+```
+## 📈 Performance
 
-4 - The dataset was divided into separate datasets for each attack category. Attack tags have been renamed for each. 0 = Normal, 1 = DoS, 2 = Probe, 3 = R2L, 4 = U2R. In the new datasets, the tag column has been replaced with the new values.
+Model	Accuracy	F1-Score	Notes
+LSTM	> 99%	> 99%	Excellent multiclass performance
+BiLSTM	> 99%	> 99%	Comparable to LSTM
+CNN	> 98%	> 98%	Robust across all five protocols
+MLP	> 99%	> 99%	Fast training, high accuracy
 
-5 - build the model (LSTM, BiLSTM, d/t CNNs, residual netwks)
-
-6 - Optimization
+## 📄 Abstract
+Abstract
+Availability is an attribute of computer and network security which guarantees that resources are available to authorized users. Application-Layer DDoS (AlDDoS) attacks mimic legitimate traffic across OSI layers, making them especially challenging to detect. We present a deep-learning classification pipeline—using LSTM, BiLSTM, CNN, and MLP—on the CICDDoS2019 dataset. Three models achieved > 99% accuracy, while CNN exceeded 98% across all class labels.
