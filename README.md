@@ -93,7 +93,7 @@ python scripts/train_model.py \
 Supported models: lstm, bilstm, cnn, mlp
 
 ```
-## 4. Evaluate a Model
+### 4. Evaluate a Model
 ```bash
 python scripts/evaluate.py \
   --model-path models/lstm.pth \
@@ -101,11 +101,13 @@ python scripts/evaluate.py \
 ```
 ## 📈 Performance
 
-Model	Accuracy	F1-Score	Notes
-LSTM	> 99%	> 99%	Excellent multiclass performance
-BiLSTM	> 99%	> 99%	Comparable to LSTM
-CNN	> 98%	> 98%	Robust across all five protocols
-MLP	> 99%	> 99%	Fast training, high accuracy
+| Model   | Accuracy | F1-Score | Notes                            |
+| ------- | -------- | -------- | -------------------------------- |
+| LSTM    | > 99%    | > 99%    | Excellent multiclass performance |
+| BiLSTM  | > 99%    | > 99%    | Comparable to LSTM               |
+| CNN     | > 98%    | > 98%    | Robust across all five protocols |
+| MLP     | > 99%    | > 99%    | Fast training, high accuracy     |
+
 
 ## 📄 Abstract
 Abstract
